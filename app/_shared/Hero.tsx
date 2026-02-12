@@ -110,7 +110,7 @@ const Hero = () => {
 </Select>
           <InputGroupButton className="ml-auto" size="sm"
           disabled={loading}
-           variant="default" onClick={()=>onCreateProject}>
+           variant="default" onClick={onCreateProject}>
             {loading? <Loader className='animate-spin'/> :   <Send/>}
           
           </InputGroupButton>
