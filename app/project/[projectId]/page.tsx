@@ -40,6 +40,9 @@ const ProjectCanvasPlayground = () => {
   if(projectDetail&&screenConfig&&screenConfig.length==0){
     generateScreenConfig();
   }
+  else if(projectDetail&&screenConfig){
+  GenerateScreenUIUX();
+  }
   },[projectDetail&&screenConfig])
 
 
@@ -60,6 +63,30 @@ const ProjectCanvasPlayground = () => {
     setloading(false)
 
 
+  }
+
+  const GenerateScreenUIUX=async ()=>{
+     setloading(true);
+     for(let index=0; index<screenConfig?.length; index++){
+      const screen = screenConfig[index];
+      if(screen?.code) continue ;
+
+      setloadingMsg('Generating Screen' + index+1)
+
+      const result=await axios.post('/api/generate-screen-ui',{
+        projectId,
+        screenId:screen?.screenId,
+        screenName:screen?.screenName,
+        purpose:screen?.purpose,
+        screenDescription:screen?.screenDescription
+      });
+      console.log(result.data)
+      setscreenConfig(prev=>prev.map((item,i)=>
+      (i===index?result.data : item)))
+
+     }
+
+     setloading(false);
   }
 
   return (
