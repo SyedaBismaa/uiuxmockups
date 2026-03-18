@@ -19,7 +19,7 @@ const Canvas = ({projectDetail, screenConfig, loading}:Props) => {
     const isMobile = projectDetail?.device=='mobile';
 
     const SCREEN_WIDTH = isMobile ? 300 : 950;
-    const SCREEN_HIGHT = isMobile ? 800 : 800;
+    const SCREEN_HEIGHT = isMobile ? 800 : 800;
     const GAP = isMobile ? 10 : 60;
 
   return (
@@ -48,19 +48,19 @@ const Canvas = ({projectDetail, screenConfig, loading}:Props) => {
   >
     
   {screenConfig?.map((screen,index)=>(
-     <div>
+     <div key={index} style={{position:'absolute', left:index*(SCREEN_WIDTH+GAP), top:0, width:SCREEN_WIDTH, height:SCREEN_HEIGHT}}>
       {screen?.code? <ScreenFrame 
      x={index*(SCREEN_WIDTH+GAP)} y={0}
      width={SCREEN_WIDTH}
-     height={SCREEN_HIGHT}
-     key={index} setPanningEnabled={setpanningEnabled}
+     height={SCREEN_HEIGHT}
+     setPanningEnabled={setpanningEnabled}
      htmlCode={screen?.code}
      projectDetail= {projectDetail}
      />
     : <div className='border-2 bg-white rounded-2xl p-5 gap-3 flex flex-col' 
     style={{
         width:SCREEN_WIDTH,
-        height:SCREEN_HIGHT
+        height:SCREEN_HEIGHT
         
       }}
     >

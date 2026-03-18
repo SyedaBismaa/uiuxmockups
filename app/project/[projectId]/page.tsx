@@ -46,7 +46,7 @@ const ProjectCanvasPlayground = () => {
   else if(projectDetail&&screenConfigOriginal){
   GenerateScreenUIUX();
   }
-  },[projectDetail&&screenConfigOriginal])
+  },[projectDetail, screenConfigOriginal])
 
 
   const generateScreenConfig= async ()=>{
@@ -74,7 +74,7 @@ const ProjectCanvasPlayground = () => {
       const screen = screenConfig[index];
       if(screen?.code) continue ;
 
-      setloadingMsg('Generating Screen' + index+1)
+      setloadingMsg(`Generating Screen ${index + 1}`)
 
       const result=await axios.post('/api/generate-screen-ui',{
         projectId,

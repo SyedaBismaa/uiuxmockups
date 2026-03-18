@@ -249,7 +249,10 @@ export type Theme = (typeof THEMES)[ThemeKey];
 
 
 
-export function themeToCssVars(theme: any) {
+export function themeToCssVars(themeKey: ThemeKey | undefined) {
+    const defaultTheme = THEMES.AURORA_INK;
+    const theme = themeKey && THEMES[themeKey] ? THEMES[themeKey] : defaultTheme;
+    
     return `
   :root {
     --background: ${theme.background};
