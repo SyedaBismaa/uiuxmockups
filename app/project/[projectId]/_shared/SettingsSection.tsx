@@ -15,8 +15,8 @@ type Props={
 const SettingsSection = ({projectDetail}:Props) => {
 
     const [selectedtheme, setselectedtheme] = useState('AURORA_INK')
-    const [projectName, setprojectName] = useState(projectDetail?.projectName)
-    const [userNewScreenInput, setuserNewScreenInput] = useState<string>()
+    const [projectName, setprojectName] = useState(projectDetail?.projectName ?? '')
+    const [userNewScreenInput, setuserNewScreenInput] = useState<string>('')
 
 
     useEffect(()=>{

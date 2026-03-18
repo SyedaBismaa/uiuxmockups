@@ -27,7 +27,7 @@ import { randomUUID } from 'crypto'
 
 const Hero = () => {
   const router = useRouter();
-  const [userInput, setuserInput] = useState<string>()
+  const [userInput, setuserInput] = useState<string>('')
   const [device, setdevice] = useState<string>('website')
   const [loading, setloading] = useState(false);
   const {user}= useUser();
