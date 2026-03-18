@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation'
 import axios from 'axios'
 import { ProjectType, ScreenConfig } from '@/types/types'
 import { Loader2Icon, LoaderIcon } from 'lucide-react'
+import Canvas from './_shared/Canvas'
 
 
 const ProjectCanvasPlayground = () => {
@@ -15,6 +16,7 @@ const ProjectCanvasPlayground = () => {
   const [projectDetail, setprojectDetail] = useState<ProjectType>()
   const [loading, setloading] = useState(false);
   const [loadingMsg, setloadingMsg] = useState('Loading')
+  const [screenConfigOriginal, setscreenConfigOriginal] = useState<ScreenConfig[]>([])
   const [screenConfig, setscreenConfig] = useState<ScreenConfig[]>([])
 
   useEffect(()=>{
@@ -27,6 +29,7 @@ const ProjectCanvasPlayground = () => {
      const result = await axios.get('/api/project?projectId='+projectId)
      console.log(result.data)
      setprojectDetail(result?.data?.projectDetail);
+     setscreenConfigOriginal(result?.data?.screenConfig)
      setscreenConfig(result?.data?.screenConfig)
     //  if(result.data?.screenConfig.length==0){
     //   generateScreenConfig();
@@ -37,13 +40,13 @@ const ProjectCanvasPlayground = () => {
 
 
   useEffect(()=>{
-  if(projectDetail&&screenConfig&&screenConfig.length==0){
+  if(projectDetail&&screenConfigOriginal&&screenConfigOriginal.length==0){
     generateScreenConfig();
   }
-  else if(projectDetail&&screenConfig){
+  else if(projectDetail&&screenConfigOriginal){
   GenerateScreenUIUX();
   }
-  },[projectDetail&&screenConfig])
+  },[projectDetail, screenConfigOriginal])
 
 
   const generateScreenConfig= async ()=>{
@@ -71,7 +74,7 @@ const ProjectCanvasPlayground = () => {
       const screen = screenConfig[index];
       if(screen?.code) continue ;
 
-      setloadingMsg('Generating Screen' + index+1)
+      setloadingMsg(`Generating Screen ${index + 1}`)
 
       const result=await axios.post('/api/generate-screen-ui',{
         projectId,
@@ -99,12 +102,15 @@ const ProjectCanvasPlayground = () => {
         </div>}
 
 
-        <div className='flex'>
+        <div className='flex gap-5'>
 
             {/* Setting  */}
             <SettingsSection projectDetail={projectDetail} />
 
             {/* Canvas  */}
+            <Canvas projectDetail={projectDetail} 
+            screenConfig={screenConfig}/>
+
 
         </div>
     </div>

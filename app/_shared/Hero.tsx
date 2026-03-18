@@ -22,12 +22,11 @@ import { suggestions } from '@/data/constant'
 import { useUser } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 import axios from 'axios'
-import { randomUUID } from 'crypto'
 
 
 const Hero = () => {
   const router = useRouter();
-  const [userInput, setuserInput] = useState<string>()
+  const [userInput, setuserInput] = useState<string>('')
   const [device, setdevice] = useState<string>('website')
   const [loading, setloading] = useState(false);
   const {user}= useUser();
@@ -122,7 +121,7 @@ const Hero = () => {
 
 <div className='flex gap-5 mt-4'>
   {suggestions.map((suggestion,index)=>(
-    <div
+    <div key={index}
     onClick={()=>setuserInput(suggestion?.description)}
      className='p-2 
     border rounded-2xl z-10 cursor-pointer bg-white items-center flex gap-5 flex-col '>

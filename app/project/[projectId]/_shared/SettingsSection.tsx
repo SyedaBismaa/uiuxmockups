@@ -15,12 +15,14 @@ type Props={
 const SettingsSection = ({projectDetail}:Props) => {
 
     const [selectedtheme, setselectedtheme] = useState('AURORA_INK')
-    const [projectName, setprojectName] = useState(projectDetail?.projectName)
-    const [userNewScreenInput, setuserNewScreenInput] = useState<string>()
+    const [projectName, setprojectName] = useState(projectDetail?.projectName ?? '')
+    const [userNewScreenInput, setuserNewScreenInput] = useState<string>('')
 
 
     useEffect(()=>{
-       projectDetail&&setprojectName(projectDetail?.projectName)
+       if(projectDetail?.projectName) {
+         setprojectName(projectDetail.projectName)
+       }
     },[projectDetail])
 
   return (
@@ -38,6 +40,7 @@ const SettingsSection = ({projectDetail}:Props) => {
          <div className='mt-5'>
             <h1 className='text-sm mb-2'>Generate New Screen</h1>
          <Textarea
+         value={userNewScreenInput}
          onChange={(event)=>setuserNewScreenInput(event.target.value)}
           placeholder='Enter Prompt to generate screen using Ai'/>
 
