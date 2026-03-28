@@ -152,7 +152,7 @@ const html = useMemo(() => `
   key={activeTheme}
   ref={iframeRef}
   style={{ width: '100%', height: 'calc(100% - 40px)', border: 'none', backgroundColor: 'white' }}
-  sandbox="allow-scripts"
+  sandbox="allow-scripts allow-same-origin"
   srcDoc={html}
 />
     </Rnd>

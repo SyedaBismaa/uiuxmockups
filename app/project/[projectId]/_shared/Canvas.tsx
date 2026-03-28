@@ -32,9 +32,9 @@ const Canvas = ({projectDetail, screenConfig, loading}:Props) => {
 
   return (
     <div className="tools flex gap-2  ">
-      <Button className="bg-white  rounded-full px-5 p-3" variant={'ghost'} onClick={() => zoomIn()}><Plus/></Button>
-      <Button className="bg-white  rounded-full px-5 p-3" variant={'ghost'} onClick={() => zoomOut()}><Minus/></Button>
-      <Button className="bg-white  rounded-full px-5 p-3"className="bg-white rounded-full px-5 p-3"  variant={'ghost'} onClick={() => resetTransform()}><RefreshCcw/></Button>
+      <Button className="bg-white rounded-full px-5 p-3" variant={'ghost'} onClick={() => zoomIn()}><Plus/></Button>
+      <Button className="bg-white rounded-full px-5 p-3" variant={'ghost'} onClick={() => zoomOut()}><Minus/></Button>
+      <Button className="bg-white rounded-full px-5 p-3" variant={'ghost'} onClick={() => resetTransform()}><RefreshCcw/></Button>
     </div>
   );
 };

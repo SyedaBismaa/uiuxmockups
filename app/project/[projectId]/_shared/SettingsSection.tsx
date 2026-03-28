@@ -24,8 +24,8 @@ const SettingsSection = ({projectDetail}:Props) => {
    
  
     useEffect(() => {
-  if (projectDetail?.projectName) {
-    setprojectName(projectDetail.projectName)
+  if (projectDetail) {
+    setprojectName(projectDetail.projectName ?? '')
     setselectedtheme(projectDetail?.theme as string)
     setSettingDetail({
       projectId: projectDetail.projectId,
