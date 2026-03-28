@@ -6,6 +6,7 @@ import { UserDetsContext } from '@/context/UserDetsContext';
 function Provider({children}: any) {
 
    const [userDeatils, setuserDeatils] = useState()
+
     useEffect(()=>{
         CreateNewUser();
     },[]);
