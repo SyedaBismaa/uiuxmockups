@@ -2,10 +2,11 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { SettingContext } from '@/context/SettingContext'
 import { THEME_NAME_LIST, THEMES } from '@/data/Themes'
 import { ProjectType } from '@/types/types'
 import { Camera, Share, Sparkle } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 
 
 type Props={
@@ -17,13 +18,30 @@ const SettingsSection = ({projectDetail}:Props) => {
     const [selectedtheme, setselectedtheme] = useState('AURORA_INK')
     const [projectName, setprojectName] = useState(projectDetail?.projectName ?? '')
     const [userNewScreenInput, setuserNewScreenInput] = useState<string>('')
+    const {settingDetail,setSettingDetail}=useContext(SettingContext);
 
+   
+   
+ 
+    useEffect(() => {
+  if (projectDetail?.projectName) {
+    setprojectName(projectDetail.projectName)
+    setselectedtheme(projectDetail?.theme as string)
+    setSettingDetail({
+      projectId: projectDetail.projectId,
+      projectName: projectDetail.projectName,
+      theme: projectDetail.theme,
+    })
+  }
+}, [projectDetail])
 
-    useEffect(()=>{
-       if(projectDetail?.projectName) {
-         setprojectName(projectDetail.projectName)
-       }
-    },[projectDetail])
+    const OnThemeSelect=(theme:string)=>{
+       setselectedtheme(theme);
+       setSettingDetail((prev:any)=>({
+        ...prev,
+        theme:theme
+       }))
+    }
 
   return (
   <div className='w-[300px] h-[90vh] p-5 border-r flex flex-col overflow-hidden'>
@@ -33,7 +51,13 @@ const SettingsSection = ({projectDetail}:Props) => {
             <h1 className='text-sm mb-2'>Project Name</h1>
          <Input placeholder='Project Name'
          value={projectName}
-         onChange={(event)=>setprojectName(event.target.value)}
+        onChange={(event) => {
+  setprojectName(event.target.value)
+  setSettingDetail((prev: any) => ({
+    ...prev,
+    projectName: event.target.value  
+  }))
+}}
          />
          </div>
 
@@ -56,7 +80,7 @@ const SettingsSection = ({projectDetail}:Props) => {
                   <div
                     key={theme}
                     className={`p-3 border rounded-xl mb-2 cursor-pointer ${theme == selectedtheme ? 'border-primary bg-primary/20' : ''}`}
-                    onClick={() => setselectedtheme(theme)}>
+                    onClick={() => OnThemeSelect(theme)}>
                     <h2>{theme}</h2>
                     <div className='flex gap-2 p-3'>
                       <div className={`h-4 w-4  rounded-full`} style={{ background: THEMES[theme].primary }} />

@@ -1,9 +1,11 @@
 "use client"
 import React, { useState } from 'react'
-import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+import { TransformWrapper, TransformComponent, useControls } from "react-zoom-pan-pinch";
 import ScreenFrame from './ScreenFrame';
 import { ProjectType, ScreenConfig } from '@/types/types';
 import { Skeleton } from '@/components/ui/skeleton';
+import {  Minus, Plus, RefreshCcw } from 'lucide-react';
+import { Button } from '@base-ui/react';
 
 type Props={
 projectDetail:ProjectType | undefined,
@@ -21,6 +23,22 @@ const Canvas = ({projectDetail, screenConfig, loading}:Props) => {
     const SCREEN_WIDTH = isMobile ? 300 : 950;
     const SCREEN_HEIGHT = isMobile ? 800 : 800;
     const GAP = isMobile ? 10 : 60;
+
+
+
+
+    const Controls = () => {
+  const { zoomIn, zoomOut, resetTransform } = useControls();
+
+  return (
+    <div className="tools flex gap-2  ">
+      <Button className="bg-white  rounded-full px-5 p-3" variant={'ghost'} onClick={() => zoomIn()}><Plus/></Button>
+      <Button className="bg-white  rounded-full px-5 p-3" variant={'ghost'} onClick={() => zoomOut()}><Minus/></Button>
+      <Button className="bg-white  rounded-full px-5 p-3"className="bg-white rounded-full px-5 p-3"  variant={'ghost'} onClick={() => resetTransform()}><RefreshCcw/></Button>
+    </div>
+  );
+};
+
 
   return (
     <div className='w-full h-screen '
@@ -43,6 +61,9 @@ const Canvas = ({projectDetail, screenConfig, loading}:Props) => {
         doubleClick={{disabled:false}}
         panning={{disabled:!panningEnabled}}
         >
+           {({ zoomIn, zoomOut, resetTransform, ...rest }) => (
+        <>
+          <Controls />
   <TransformComponent
   wrapperStyle={{width:'100%' , height:'100%'}}
   >
@@ -82,6 +103,7 @@ const Canvas = ({projectDetail, screenConfig, loading}:Props) => {
 
 
   </TransformComponent>
+  </>)}
 </TransformWrapper>
     </div>
   )
