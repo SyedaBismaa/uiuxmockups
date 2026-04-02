@@ -5,7 +5,7 @@ import ScreenFrame from './ScreenFrame';
 import { ProjectType, ScreenConfig } from '@/types/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import {  Minus, Plus, RefreshCcw } from 'lucide-react';
-import { Button } from '@base-ui/react';
+import { Button } from '@/components/ui/button';
 
 type Props={
 projectDetail:ProjectType | undefined,
@@ -77,6 +77,7 @@ const Canvas = ({projectDetail, screenConfig, loading}:Props) => {
      setPanningEnabled={setpanningEnabled}
      htmlCode={screen?.code}
      projectDetail= {projectDetail}
+     screen={screen}
      />
     : <div className='border-2 bg-white rounded-2xl p-5 gap-3 flex flex-col' 
     style={{
