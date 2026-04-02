@@ -2,7 +2,8 @@ import { db } from "@/config/db";
 import { openrouter } from "@/config/openrouter";
 import { ProjectTable, ScreenConfigTable } from "@/config/schema";
 import { APP_LAYOUT_CONFIG_PROMPT } from "@/data/prompt";
-import { eq } from "drizzle-orm";
+import { currentUser } from "@clerk/nextjs/server";
+import { and, eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req:NextRequest){
@@ -56,4 +57,22 @@ return NextResponse.json(JSONAIResult)
     NextResponse.json({msg:'internal server error'})
 }
 
+}
+
+
+
+export async function DELETE(req:NextRequest){
+  const projectId=req.nextUrl.searchParams.get('projectId');
+  const screenId=req.nextUrl.searchParams.get('screenId') 
+
+  const user=await currentUser();
+
+  if(!user){
+    return NextResponse.json({msg:'unauthorized'},{status:401})
+  }
+
+  const result = await db.delete(ScreenConfigTable)
+  .where(and(eq(ScreenConfigTable.screenId,screenId as string ), eq(ScreenConfigTable.projectId,projectId as string)))
+
+  return NextResponse.json({msg:"Deleted"})
 }

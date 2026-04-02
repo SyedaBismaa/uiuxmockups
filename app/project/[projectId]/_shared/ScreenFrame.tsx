@@ -1,9 +1,11 @@
 import { SettingContext } from '@/context/SettingContext'
 import { themeToCssVars, ThemeKey } from '@/data/Themes'
-import { ProjectType } from '@/types/types'
+import { ProjectType, ScreenConfig } from '@/types/types'
 import { GripVertical } from 'lucide-react'
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { Rnd } from 'react-rnd'
+import ScreenHnadler from './ScreenHnadler'
+import { HtmlWrapper } from '@/data/constant'
 
 type Props = {
   x: number
@@ -13,9 +15,20 @@ type Props = {
   height: number
   htmlCode: string | undefined
   projectDetail: ProjectType | undefined
+  screen :ScreenConfig | undefined
 }
 
-const ScreenFrame = ({ x, y, setPanningEnabled, width, height, htmlCode, projectDetail }: Props) => {
+const ScreenFrame = ({ 
+  x, 
+  y, 
+  setPanningEnabled, 
+  width, 
+  height, 
+  htmlCode, 
+  projectDetail,
+  screen
+
+}: Props) => {
   const { settingDetail } = useContext(SettingContext)
 
   // ✅ Avoid hydration mismatch: don't initialize with props directly
@@ -38,24 +51,9 @@ const ScreenFrame = ({ x, y, setPanningEnabled, width, height, htmlCode, project
 
 const activeTheme = (settingDetail?.theme ?? projectDetail?.theme) as ThemeKey
 
-const html = useMemo(() => `
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
-  <style>
-    ${themeToCssVars(activeTheme)}
-  </style>
-</head>
-<body class="bg-[var(--background)] text-[var(--foreground)] w-full">
-  ${htmlCode ?? ""}
-</body>
-</html>
-`, [activeTheme, htmlCode])
+const html = HtmlWrapper(activeTheme  ,htmlCode as string)
+  
+
 
   const measureIframeHeight = useCallback(() => {
     const iframe = iframeRef.current
@@ -144,8 +142,14 @@ const html = useMemo(() => `
         })
       }}
     >
-      <div className="drag-handle flex gap-2 items-center cursor-move bg-gray-100 p-2">
-        <GripVertical /> Drag Here
+      <div className="drag-handle flex gap-2 items-center cursor-move rounded-2xl mb-2 bg-gray-100 p-2">
+       
+        <ScreenHnadler 
+        iframeRef={iframeRef}
+         activeTheme={activeTheme}
+          screen={screen}
+          projectId={projectDetail?.projectId}
+          />
       </div>
 
       <iframe

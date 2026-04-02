@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import ProjectHeader from './_shared/ProjectHeader'
 import SettingsSection from './_shared/SettingsSection'
 import { useParams } from 'next/navigation'
@@ -7,6 +7,7 @@ import axios from 'axios'
 import { ProjectType, ScreenConfig } from '@/types/types'
 import { Loader2Icon, LoaderIcon } from 'lucide-react'
 import Canvas from './_shared/Canvas'
+import { RefreshDataContext } from '@/context/RefreshDataContext'
 
 
 const ProjectCanvasPlayground = () => {
@@ -18,10 +19,18 @@ const ProjectCanvasPlayground = () => {
   const [loadingMsg, setloadingMsg] = useState('Loading')
   const [screenConfigOriginal, setscreenConfigOriginal] = useState<ScreenConfig[]>([])
   const [screenConfig, setscreenConfig] = useState<ScreenConfig[]>([])
+const {refreshData,setRefreshData} = useContext(RefreshDataContext) 
+
 
   useEffect(()=>{
     projectId&&GetProjectDetail();
   },[projectId])
+
+  useEffect(()=>{
+ if(refreshData?.method=='screenConfig'){
+  GetProjectDetail();
+ }
+  },[refreshData])
 
   const GetProjectDetail= async ()=> {
     setloading(true);
@@ -38,6 +47,8 @@ const ProjectCanvasPlayground = () => {
 
   }
 
+
+  
 
   useEffect(()=>{
   if(projectDetail&&screenConfigOriginal&&screenConfigOriginal.length==0){
