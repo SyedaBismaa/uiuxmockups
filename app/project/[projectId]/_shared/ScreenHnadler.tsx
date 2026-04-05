@@ -93,20 +93,41 @@ const OnDelete = async  ()=>{
  setRefreshData({method:'screenConfig', date:Date.now()})
 }
 
- const editScreen=async ()=>{
-    setLoading(true)
-   toast.info("Regenerating New screen, Please wait...")
-  const result = await axios.post('/api/edit-screen',{
-    projectId:projectId,
-    screenId:screen?.screenId,
-    userInput:editUserInput,
-    oldCode:screen?.code
-  })
-  toast.success("Screen Edited!")
- 
-  setRefreshData({method:'screenConfig', date:Date.now()})
-  setLoading(false)
- }
+ const editScreen = async () => {
+    if (!editUserInput?.trim()) {
+      toast.error("Please describe the changes you want to make.");
+      return;
+    }
+
+    if (!projectId || !screen?.screenId || !screen?.code) {
+      toast.error("Missing screen or project information.");
+      return;
+    }
+
+    setLoading(true);
+    toast.info("Regenerating screen, please wait...");
+
+    try {
+      const result = await axios.post('/api/edit-screen', {
+        projectId: projectId,
+        screenId: screen.screenId,
+        userInput: editUserInput,
+        oldCode: screen.code,
+      });
+
+      if (result?.status === 200) {
+        toast.success("Screen Edited!");
+        setRefreshData({ method: 'screenConfig', date: Date.now() });
+      } else {
+        toast.error("Failed to edit screen. Please try again.");
+      }
+    } catch (error: any) {
+      console.error('editScreen error:', error);
+      toast.error(error?.response?.data?.error || error?.message || 'Unable to edit screen.');
+    } finally {
+      setLoading(false);
+    }
+  }
 
 
   return (
