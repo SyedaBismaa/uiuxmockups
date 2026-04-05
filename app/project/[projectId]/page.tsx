@@ -48,7 +48,6 @@ const {refreshData,setRefreshData} = useContext(RefreshDataContext)
   }
 
 
-  
 
   useEffect(()=>{
   if(projectDetail&&screenConfigOriginal&&screenConfigOriginal.length==0){

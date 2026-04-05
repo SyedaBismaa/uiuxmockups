@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { ScreenConfig } from '@/types/types'
-import { Code2Icon, Copy,  Download, GripVertical, MoreVerticalIcon, Trash } from 'lucide-react'
-import React, { useContext } from 'react'
+import { Code2Icon, Copy,  Download, GripVertical, Loader2Icon, MoreVerticalIcon, Sparkle, Trash } from 'lucide-react'
+import React, { useContext, useState } from 'react'
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import {
@@ -19,14 +19,18 @@ import html2canvas from 'html2canvas'
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import axios from 'axios';
 import { RefreshDataContext } from '@/context/RefreshDataContext';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { Textarea } from '@/components/ui/textarea';
+
 
 type Props={
     screen:ScreenConfig | undefined,
@@ -45,6 +49,9 @@ const ScreenHnadler = ({
 
 const htmlCode = HtmlWrapper(activeTheme, screen?.code as string)
 const {refreshData,setRefreshData} = useContext(RefreshDataContext)
+const [editUserInput,setEditUserInput]=useState<string>()
+const [loading,setLoading]=useState(false)
+
 
 const takeIframeScreenshot = async () => {
     const iframe = iframeRef.current;
@@ -86,6 +93,20 @@ const OnDelete = async  ()=>{
  setRefreshData({method:'screenConfig', date:Date.now()})
 }
 
+ const editScreen=async ()=>{
+    setLoading(true)
+   toast.info("Regenerating New screen, Please wait...")
+  const result = await axios.post('/api/edit-screen',{
+    projectId:projectId,
+    screenId:screen?.screenId,
+    userInput:editUserInput,
+    oldCode:screen?.code
+  })
+  toast.success("Screen Edited!")
+ 
+  setRefreshData({method:'screenConfig', date:Date.now()})
+  setLoading(false)
+ }
 
 
   return (
@@ -150,8 +171,24 @@ const OnDelete = async  ()=>{
            <Button onClick={takeIframeScreenshot} variant={'ghost'}>
             <Download/>
            </Button>
-
-
+  
+         
+           <Popover>
+  <PopoverTrigger asChild>
+      <Button variant={'ghost'}><Sparkle/></Button>
+  </PopoverTrigger>
+  <PopoverContent>
+   <div>
+    <Textarea
+    onChange={(event)=>setEditUserInput(event.target.value)}
+    placeholder='What Changes You want to Make'/>
+    <Button
+    disabled={loading}
+    onClick={()=>editScreen()}
+    className='mt-2' size={'sm'}> {loading?<Loader2Icon className='animate-spin'/> : <Sparkle/>} Regenerate</Button>
+   </div>
+  </PopoverContent>
+</Popover>
            
            <DropdownMenu>
   <DropdownMenuTrigger asChild>
@@ -169,6 +206,9 @@ const OnDelete = async  ()=>{
      
   </DropdownMenuContent>
 </DropdownMenu>
+
+
+
 
          </div>
 
