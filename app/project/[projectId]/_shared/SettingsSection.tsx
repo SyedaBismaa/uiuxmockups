@@ -2,25 +2,28 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { RefreshDataContext } from '@/context/RefreshDataContext'
 import { SettingContext } from '@/context/SettingContext'
 import { THEME_NAME_LIST, THEMES } from '@/data/Themes'
 import { ProjectType } from '@/types/types'
-import { Camera, Share, Sparkle } from 'lucide-react'
-import React, { useContext, useEffect, useState } from 'react'
+import axios from 'axios'
+import { toast } from 'sonner';
 
 
 type Props={
   projectDetail:ProjectType | undefined
+  screenDescription:string|undefined
 }
 
-const SettingsSection = ({projectDetail}:Props) => {
+const SettingsSection = ({projectDetail,screenDescription}:Props) => {
 
     const [selectedtheme, setselectedtheme] = useState('AURORA_INK')
     const [projectName, setprojectName] = useState(projectDetail?.projectName ?? '')
     const [userNewScreenInput, setuserNewScreenInput] = useState<string>('')
     const {settingDetail,setSettingDetail}=useContext(SettingContext);
-
-   
+    const [loading,setLoading]=useState(false)
+    const {refreshData,setRefreshData} = useContext(RefreshDataContext) 
+     const [loadingMsg, setloadingMsg] = useState('Loading')
    
  
     useEffect(() => {
@@ -43,10 +46,38 @@ const SettingsSection = ({projectDetail}:Props) => {
        }))
     }
 
+
+    const GenerateNewScreen= async()=>{
+      try{
+         setLoading(true)
+    const result= await axios.post('/api/generate-config',{
+     projectId:projectDetail?.projectId,
+     projectName:projectDetail?.projectName,
+     deviceType:projectDetail?.device,
+     theme:projectDetail?.theme,
+     userInput: userNewScreenInput,
+      oldScreenDescription:screenDescription
+    })
+    console.log(result.data);
+    setRefreshData({method:'screenConfig', date:Date.now()})
+    setLoading(false)
+      }catch(err){
+        console.error(err);
+        toast.error((err as Error)?.message || 'Generation failed');
+        setLoading(false)
+      }
+    
+    }
+
+
   return (
-  <div className='w-[300px] h-[90vh] p-5 border-r flex flex-col overflow-hidden'>
+  <div className='w-[300px] h-[90vh] p-5 border-r flex flex-col overflow-hidden relative'>
         <h2 className='font-medium text-lg '>Settings</h2>
 
+ {loading && <div 
+        className='p-3 bg-blue-300 border-blue-600 rounded-xl absolute top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2'>
+          <h2 className='flex gap-2 items-center'> <Loader2Icon className='animate-spin'/> {loadingMsg}</h2>
+        </div>}
          <div className='mt-3'>
             <h1 className='text-sm mb-2'>Project Name</h1>
          <Input placeholder='Project Name'
@@ -68,7 +99,10 @@ const SettingsSection = ({projectDetail}:Props) => {
          onChange={(event)=>setuserNewScreenInput(event.target.value)}
           placeholder='Enter Prompt to generate screen using Ai'/>
 
-         <Button size={'sm'} className='mt-2 w-full'><Sparkle/> Generate With Ai</Button>
+         <Button size={'sm'} className='mt-2 w-full' 
+         disabled={loading}
+         onClick={GenerateNewScreen}
+         >  {loading?<Loader2Icon className='animate-spin'/>:<Sparkle/>}  Generate With Ai</Button>
          </div>
 
 

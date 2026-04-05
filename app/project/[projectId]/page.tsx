@@ -115,7 +115,9 @@ const {refreshData,setRefreshData} = useContext(RefreshDataContext)
         <div className='flex gap-5'>
 
             {/* Setting  */}
-            <SettingsSection projectDetail={projectDetail} />
+            <SettingsSection
+            screenDescription={screenConfig[0]?.screenDescription}
+            projectDetail={projectDetail} />
 
             {/* Canvas  */}
             <Canvas projectDetail={projectDetail} 

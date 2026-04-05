@@ -1,13 +1,13 @@
 import { db } from "@/config/db";
 import { openrouter } from "@/config/openrouter";
 import { ProjectTable, ScreenConfigTable } from "@/config/schema";
-import { APP_LAYOUT_CONFIG_PROMPT } from "@/data/prompt";
+import { APP_LAYOUT_CONFIG_PROMPT, GENERATE_NEW_SCREEN_IN_EXISTING_PROJECT } from "@/data/prompt";
 import { currentUser } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req:NextRequest){
-    const {userInput, deviceType,projectId} = await req.json();
+    const {userInput, deviceType,projectId, oldScreenDescription,theme} = await req.json();
 
 
 const aiResult = await openrouter.chat.send({
@@ -16,11 +16,13 @@ const aiResult = await openrouter.chat.send({
     messages: [
       {
         role: "system",
-        content: APP_LAYOUT_CONFIG_PROMPT.replace("{deviceType}", deviceType)
+        content:oldScreenDescription?
+        GENERATE_NEW_SCREEN_IN_EXISTING_PROJECT.replace("{deviceType}", deviceType) :
+        APP_LAYOUT_CONFIG_PROMPT.replace("{deviceType}", deviceType)
       },
       {
         role: "user",
-        content: userInput
+        content: oldScreenDescription?userInput+" Old screen description is:"+oldScreenDescription : userInput
       }
     ]
   }
@@ -29,11 +31,21 @@ const aiResult = await openrouter.chat.send({
 
 //save to db
 
-const JSONAIResult=JSON.parse(aiResult?.choices[0]?.message?.content as string)
+let JSONAIResult;
+try {
+  const content = aiResult?.choices[0]?.message?.content;
+  if (!content) {
+    return NextResponse.json({ error: "Invalid AI response" }, { status: 502 });
+  }
+  JSONAIResult = JSON.parse(content);
+} catch (error) {
+  console.error("JSON parse error:", error);
+  return NextResponse.json({ error: "Invalid JSON from AI" }, { status: 422 });
+}
 
 if(JSONAIResult){
     //upadte project table w nme
-await db.update(ProjectTable).set({
+ !oldScreenDescription&& await db.update(ProjectTable).set({
     projectVisualDescription:JSONAIResult?.
 projectVisualDescription,
 projectName:JSONAIResult?.projectName,
@@ -41,20 +53,22 @@ theme:JSONAIResult?.theme
 }).where(eq(ProjectTable.projectId,projectId as string))
 
 //insert screen config
-JSONAIResult.screens?.forEach(async (screen:any)=>{
-    const result=await db.insert(ScreenConfigTable).values({
-        projectId:projectId,
-        purpose:screen?.purpose,
-        screenDescription:screen?.layoutDescription,
-        screenId:screen?.id,
-        screenName:screen?.name
-
-    })
-})
+if (JSONAIResult.screens) {
+  const insertPromises = JSONAIResult.screens.map(async (screen: any) => {
+    return db.insert(ScreenConfigTable).values({
+      projectId: projectId,
+      purpose: screen?.purpose,
+      screenDescription: screen?.layoutDescription,
+      screenId: screen?.id,
+      screenName: screen?.name
+    });
+  });
+  await Promise.all(insertPromises);
+}
 
 return NextResponse.json(JSONAIResult)
 }else{
-    NextResponse.json({msg:'internal server error'})
+    return NextResponse.json({msg:'internal server error'})
 }
 
 }
@@ -76,3 +90,8 @@ export async function DELETE(req:NextRequest){
 
   return NextResponse.json({msg:"Deleted"})
 }
+
+
+
+
+
