@@ -7,16 +7,15 @@ import { SettingContext } from '@/context/SettingContext'
 import { THEME_NAME_LIST, THEMES } from '@/data/Themes'
 import { ProjectType } from '@/types/types'
 import axios from 'axios'
-import { Camera, Loader2Icon, Share, Sparkle } from 'lucide-react'
-import React, { useContext, useEffect, useState } from 'react'
+import { toast } from 'sonner';
 
 
 type Props={
   projectDetail:ProjectType | undefined
-  screeDescription:string|undefined
+  screenDescription:string|undefined
 }
 
-const SettingsSection = ({projectDetail,screeDescription}:Props) => {
+const SettingsSection = ({projectDetail,screenDescription}:Props) => {
 
     const [selectedtheme, setselectedtheme] = useState('AURORA_INK')
     const [projectName, setprojectName] = useState(projectDetail?.projectName ?? '')
@@ -56,12 +55,15 @@ const SettingsSection = ({projectDetail,screeDescription}:Props) => {
      projectName:projectDetail?.projectName,
      deviceType:projectDetail?.device,
      theme:projectDetail?.theme,
-      oldScreenDescription:screeDescription
+     userInput: userNewScreenInput,
+      oldScreenDescription:screenDescription
     })
     console.log(result.data);
     setRefreshData({method:'screenConfig', date:Date.now()})
     setLoading(false)
       }catch(err){
+        console.error(err);
+        toast.error((err as Error)?.message || 'Generation failed');
         setLoading(false)
       }
     
@@ -69,12 +71,11 @@ const SettingsSection = ({projectDetail,screeDescription}:Props) => {
 
 
   return (
-  <div className='w-[300px] h-[90vh] p-5 border-r flex flex-col overflow-hidden'>
+  <div className='w-[300px] h-[90vh] p-5 border-r flex flex-col overflow-hidden relative'>
         <h2 className='font-medium text-lg '>Settings</h2>
 
  {loading && <div 
-        className='p-3 bg-blue-300
-         border-blue-600 rounded-xl absolute top-1/2 left-1/2'>
+        className='p-3 bg-blue-300 border-blue-600 rounded-xl absolute top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2'>
           <h2 className='flex gap-2 items-center'> <Loader2Icon className='animate-spin'/> {loadingMsg}</h2>
         </div>}
          <div className='mt-3'>

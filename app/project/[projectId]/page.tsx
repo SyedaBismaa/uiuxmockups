@@ -116,7 +116,7 @@ const {refreshData,setRefreshData} = useContext(RefreshDataContext)
 
             {/* Setting  */}
             <SettingsSection
-            screeDescription={screenConfig[0]?.screenDescription}
+            screenDescription={screenConfig[0]?.screenDescription}
             projectDetail={projectDetail} />
 
             {/* Canvas  */}

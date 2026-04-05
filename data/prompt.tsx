@@ -266,7 +266,7 @@ Start with
 
 
 
-export const GENRATE_NEW_SCREEN_IN_EXISITING_PROJECT_PROJECT = `You are a Lead UI/UX {deviceType} app Designer.
+export const GENERATE_NEW_SCREEN_IN_EXISTING_PROJECT = `You are a Lead UI/UX {deviceType} app Designer.
 You are extending an EXISTING project by adding EXACTLY ONE new screen.
 You are NOT allowed to redesign the project.
 You MUST return ONLY valid JSON (no markdown, no explanations, no trailing commas).
