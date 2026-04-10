@@ -7,15 +7,18 @@ import { SettingContext } from '@/context/SettingContext'
 import { THEME_NAME_LIST, THEMES } from '@/data/Themes'
 import { ProjectType } from '@/types/types'
 import axios from 'axios'
+import { Camera, Loader2Icon, Share, Sparkle } from 'lucide-react'
+import { useContext, useEffect, useState } from 'react'
 import { toast } from 'sonner';
 
 
 type Props={
   projectDetail:ProjectType | undefined
   screenDescription:string|undefined
+  takeScreenShot:any
 }
 
-const SettingsSection = ({projectDetail,screenDescription}:Props) => {
+const SettingsSection = ({projectDetail,screenDescription,takeScreenShot}:Props) => {
 
     const [selectedtheme, setselectedtheme] = useState('AURORA_INK')
     const [projectName, setprojectName] = useState(projectDetail?.projectName ?? '')
@@ -142,7 +145,7 @@ const SettingsSection = ({projectDetail,screenDescription}:Props) => {
    <div className='mt-5'>
             <h1 className='text-sm mb-2'>Extras</h1>
          <div className='flex gap-3'>
-            <Button size={'sm'} variant={'outline'} className='mt-2 '><Camera/>Screenshot</Button>
+            <Button size={'sm'} variant={'outline'} className='mt-2 ' onClick={()=>takeScreenShot()}><Camera/>Screenshot</Button>
          <Button size={'sm'} variant={'outline'} className='mt-2 '><Share/>Share</Button>
          </div>
          </div>

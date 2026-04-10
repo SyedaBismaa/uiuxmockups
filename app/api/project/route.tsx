@@ -57,13 +57,44 @@ export async function PUT(req:NextRequest){
 
         // (2) Validate the request payload
         const body = await req.json();
-        const { projectId, projectName, theme } = body;
+        const { projectId, projectName, theme , screenShot} = body;
 
         if (!projectId || typeof projectId !== 'string' || projectId.trim() === '') {
             return NextResponse.json(
                 { error: 'Invalid or missing projectId' },
                 { status: 400 }
             );
+        }
+
+        let validScreenshot: string | null = null;
+        if (screenShot !== undefined && screenShot !== null) {
+            if (typeof screenShot !== 'string') {
+                return NextResponse.json(
+                    { error: 'Invalid screenshot format' },
+                    { status: 400 }
+                );
+            }
+
+            const screenshotMatch = screenShot.match(/^data:image\/(png|jpeg|webp);base64,([A-Za-z0-9+/=]+)$/);
+            if (!screenshotMatch) {
+                return NextResponse.json(
+                    { error: 'Invalid screenshot data URL' },
+                    { status: 400 }
+                );
+            }
+
+            const base64Data = screenshotMatch[2];
+            const padding = base64Data.endsWith('==') ? 2 : base64Data.endsWith('=') ? 1 : 0;
+            const decodedSize = Math.floor(base64Data.length * 3 / 4) - padding;
+
+            if (decodedSize > 1024 * 1024) {
+                return NextResponse.json(
+                    { error: 'Screenshot exceeds maximum size of 1MB' },
+                    { status: 400 }
+                );
+            }
+
+            validScreenshot = screenShot;
         }
 
         if (!projectName || typeof projectName !== 'string' || projectName.trim() === '') {
@@ -102,6 +133,7 @@ export async function PUT(req:NextRequest){
         const result = await db.update(ProjectTable).set({
             projectName: projectName.trim(),
             theme: theme.trim(),
+            screenshot: validScreenshot,
         }).where(eq(ProjectTable.projectId, projectId))
            .returning();
 
@@ -115,3 +147,8 @@ export async function PUT(req:NextRequest){
         );
     }
 }
+
+
+
+
+
