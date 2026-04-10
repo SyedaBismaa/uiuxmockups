@@ -44,13 +44,6 @@ const Canvas = ({projectDetail, screenConfig, loading,takeScreenShot}:Props) => 
   );
 };
 
-useEffect(() => {
-   if (takeScreenShot !== undefined) {
-       onTakeScreenShot(takeScreenShot);
-   }
-}, [takeScreenShot, onTakeScreenShot])
-
-
 const captureOneIframe = async (iframe: HTMLIFrameElement) => {
     const doc = iframe.contentDocument;
     if (!doc) throw new Error("iframe doc not ready");
@@ -139,7 +132,7 @@ const onTakeScreenShot = useCallback(async (saveOnly = false) => {
         console.error(e);
         toast.error("Capture failed (iframe)");
     }
-};
+}, [captureOneIframe, updateProjectWithScreenShot, SCREEN_WIDTH, SCREEN_HEIGHT, GAP]);
 
 const updateProjectWithScreenShot = useCallback(async (base64Url: string) => {
     try {
@@ -158,6 +151,11 @@ const updateProjectWithScreenShot = useCallback(async (base64Url: string) => {
     }
 }, [projectDetail?.projectId, projectDetail?.projectName, projectDetail?.theme]);
 
+useEffect(() => {
+    if (takeScreenShot !== undefined) {
+        onTakeScreenShot(takeScreenShot);
+    }
+}, [takeScreenShot, onTakeScreenShot]);
 
   return (
     <div className='w-full h-screen '
