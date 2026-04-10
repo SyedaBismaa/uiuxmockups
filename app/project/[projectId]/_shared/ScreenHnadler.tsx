@@ -35,7 +35,7 @@ import { Textarea } from '@/components/ui/textarea';
 type Props={
     screen:ScreenConfig | undefined,
     activeTheme :any,
-    iframeRef:any
+    iframeRef: React.RefObject<HTMLIFrameElement>
     projectId:string | undefined
 }
 

@@ -16,7 +16,7 @@ type Props = {
   htmlCode: string | undefined
   projectDetail: ProjectType | undefined
   screen :ScreenConfig | undefined
-  iframeRef:any
+  iframeRef: React.RefObject<HTMLIFrameElement>
 }
 
 const ScreenFrame = ({ 

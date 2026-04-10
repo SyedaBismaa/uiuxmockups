@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { TransformWrapper, TransformComponent, useControls } from "react-zoom-pan-pinch";
 import ScreenFrame from './ScreenFrame';
 import { ProjectType, ScreenConfig } from '@/types/types';
@@ -45,8 +45,10 @@ const Canvas = ({projectDetail, screenConfig, loading,takeScreenShot}:Props) => 
 };
 
 useEffect(() => {
-   if(takeScreenShot !== undefined) onTakeScreenShot(takeScreenShot);
-}, [takeScreenShot])
+   if (takeScreenShot !== undefined) {
+       onTakeScreenShot(takeScreenShot);
+   }
+}, [takeScreenShot, onTakeScreenShot])
 
 
 const captureOneIframe = async (iframe: HTMLIFrameElement) => {
@@ -78,9 +80,11 @@ const captureOneIframe = async (iframe: HTMLIFrameElement) => {
     return canvas;
 };
 
-const onTakeScreenShot = async (saveOnly=false) => {
+const onTakeScreenShot = useCallback(async (saveOnly = false) => {
     try {
-        const iframes = iframeRefs.current.filter(Boolean) as any ;
+        const iframes = iframeRefs.current
+            .map((ref) => ref?.current)
+            .filter((iframe): iframe is HTMLIFrameElement => Boolean(iframe));
         if (!iframes.length) {
             toast.error("No iframes found to capture");
             return;
@@ -137,24 +141,22 @@ const onTakeScreenShot = async (saveOnly=false) => {
     }
 };
 
-const updateProjectWithScreenShot=async(base64Url:string)=>{
-try {
-const result=await axios.put('/api/project',{
-    screenShot:base64Url,
-    projectId:projectDetail?.projectId,
-    theme:projectDetail?.theme,
-    projectName:projectDetail?.projectName
-})
+const updateProjectWithScreenShot = useCallback(async (base64Url: string) => {
+    try {
+        const result = await axios.put('/api/project', {
+            screenShot: base64Url,
+            projectId: projectDetail?.projectId,
+            theme: projectDetail?.theme,
+            projectName: projectDetail?.projectName,
+        });
 
-console.log(result.data)
-toast.success("Screenshot saved successfully")
-} catch (error) {
-    console.error("Failed to save screenshot:", error)
-    toast.error("Failed to save screenshot")
-}
-}
-
-
+        console.log(result.data);
+        toast.success("Screenshot saved successfully");
+    } catch (error) {
+        console.error("Failed to save screenshot:", error);
+        toast.error("Failed to save screenshot");
+    }
+}, [projectDetail?.projectId, projectDetail?.projectName, projectDetail?.theme]);
 
 
   return (
@@ -185,19 +187,25 @@ toast.success("Screenshot saved successfully")
   wrapperStyle={{width:'100%' , height:'100%'}}
   >
     
-  {screenConfig?.map((screen,index)=>(
-     <div key={index} style={{position:'absolute', left:index*(SCREEN_WIDTH+GAP), top:0, width:SCREEN_WIDTH, height:SCREEN_HEIGHT}}>
-      {screen?.code? <ScreenFrame 
-     x={index*(SCREEN_WIDTH+GAP)} y={0}
-     width={SCREEN_WIDTH}
-     height={SCREEN_HEIGHT}
-     setPanningEnabled={setpanningEnabled}
-     htmlCode={screen?.code}
-     projectDetail= {projectDetail}
-     screen={screen}
-     iframeRef={(ifrm:any)=>(iframeRefs.current[index]=ifrm)}
-     />
-    : <div className='border-2 bg-white rounded-2xl p-5 gap-3 flex flex-col' 
+  {screenConfig?.map((screen,index)=>{
+       if (!iframeRefs.current[index]) {
+         iframeRefs.current[index] = React.createRef<HTMLIFrameElement>();
+       }
+       return (
+         <div key={index} style={{position:'absolute', left:index*(SCREEN_WIDTH+GAP), top:0, width:SCREEN_WIDTH, height:SCREEN_HEIGHT}}>
+           {screen?.code ? (
+             <ScreenFrame 
+               x={index*(SCREEN_WIDTH+GAP)} y={0}
+               width={SCREEN_WIDTH}
+               height={SCREEN_HEIGHT}
+               setPanningEnabled={setpanningEnabled}
+               htmlCode={screen?.code}
+               projectDetail={projectDetail}
+               screen={screen}
+               iframeRef={iframeRefs.current[index]}
+             />
+           ) : (
+             <div className='border-2 bg-white rounded-2xl p-5 gap-3 flex flex-col' 
     style={{
         width:SCREEN_WIDTH,
         height:SCREEN_HEIGHT

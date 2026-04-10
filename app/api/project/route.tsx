@@ -65,8 +65,35 @@ export async function PUT(req:NextRequest){
                 { status: 400 }
             );
         }
-         let validScreenshot: string | null = null;
-        if (screenShot && typeof screenShot === 'string') {
+
+        let validScreenshot: string | null = null;
+        if (screenShot !== undefined && screenShot !== null) {
+            if (typeof screenShot !== 'string') {
+                return NextResponse.json(
+                    { error: 'Invalid screenshot format' },
+                    { status: 400 }
+                );
+            }
+
+            const screenshotMatch = screenShot.match(/^data:image\/(png|jpeg|webp);base64,([A-Za-z0-9+/=]+)$/);
+            if (!screenshotMatch) {
+                return NextResponse.json(
+                    { error: 'Invalid screenshot data URL' },
+                    { status: 400 }
+                );
+            }
+
+            const base64Data = screenshotMatch[2];
+            const padding = base64Data.endsWith('==') ? 2 : base64Data.endsWith('=') ? 1 : 0;
+            const decodedSize = Math.floor(base64Data.length * 3 / 4) - padding;
+
+            if (decodedSize > 1024 * 1024) {
+                return NextResponse.json(
+                    { error: 'Screenshot exceeds maximum size of 1MB' },
+                    { status: 400 }
+                );
+            }
+
             validScreenshot = screenShot;
         }
 
