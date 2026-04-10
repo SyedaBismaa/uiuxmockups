@@ -16,6 +16,7 @@ type Props = {
   htmlCode: string | undefined
   projectDetail: ProjectType | undefined
   screen :ScreenConfig | undefined
+  iframeRef:any
 }
 
 const ScreenFrame = ({ 
@@ -26,7 +27,8 @@ const ScreenFrame = ({
   height, 
   htmlCode, 
   projectDetail,
-  screen
+  screen,
+  iframeRef
 
 }: Props) => {
   const { settingDetail } = useContext(SettingContext)
@@ -34,7 +36,8 @@ const ScreenFrame = ({
   // ✅ Avoid hydration mismatch: don't initialize with props directly
   const [size, setSize] = useState<{ width: number; height: number } | undefined>(undefined)
   const [mounted, setMounted] = useState(false)
-  const iframeRef = useRef<HTMLIFrameElement | null>(null)
+  
+ // const iframeRef = useRef<HTMLIFrameElement | null>(null)
 
   // ✅ Only run on client
   useEffect(() => {

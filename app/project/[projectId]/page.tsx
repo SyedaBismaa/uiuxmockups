@@ -20,7 +20,7 @@ const ProjectCanvasPlayground = () => {
   const [screenConfigOriginal, setscreenConfigOriginal] = useState<ScreenConfig[]>([])
   const [screenConfig, setscreenConfig] = useState<ScreenConfig[]>([])
 const {refreshData,setRefreshData} = useContext(RefreshDataContext) 
-
+const [takeScreenShot,setTakeScreenShot] = useState<any>()
 
   useEffect(()=>{
     projectId&&GetProjectDetail();
@@ -100,6 +100,7 @@ const {refreshData,setRefreshData} = useContext(RefreshDataContext)
      }
 
      setloading(false);
+     setTakeScreenShot(true)
   }
 
   return (
@@ -117,11 +118,15 @@ const {refreshData,setRefreshData} = useContext(RefreshDataContext)
             {/* Setting  */}
             <SettingsSection
             screenDescription={screenConfig[0]?.screenDescription}
-            projectDetail={projectDetail} />
+            projectDetail={projectDetail}
+            takeScreenShot={()=>setTakeScreenShot(false)}
+            />
 
             {/* Canvas  */}
             <Canvas projectDetail={projectDetail} 
-            screenConfig={screenConfig}/>
+            screenConfig={screenConfig}
+            takeScreenShot={takeScreenShot}
+            />
 
 
         </div>

@@ -57,13 +57,17 @@ export async function PUT(req:NextRequest){
 
         // (2) Validate the request payload
         const body = await req.json();
-        const { projectId, projectName, theme } = body;
+        const { projectId, projectName, theme , screenShot} = body;
 
         if (!projectId || typeof projectId !== 'string' || projectId.trim() === '') {
             return NextResponse.json(
                 { error: 'Invalid or missing projectId' },
                 { status: 400 }
             );
+        }
+         let validScreenshot: string | null = null;
+        if (screenShot && typeof screenShot === 'string') {
+            validScreenshot = screenShot;
         }
 
         if (!projectName || typeof projectName !== 'string' || projectName.trim() === '') {
@@ -102,6 +106,7 @@ export async function PUT(req:NextRequest){
         const result = await db.update(ProjectTable).set({
             projectName: projectName.trim(),
             theme: theme.trim(),
+            screenshot: validScreenshot,
         }).where(eq(ProjectTable.projectId, projectId))
            .returning();
 
@@ -115,3 +120,8 @@ export async function PUT(req:NextRequest){
         );
     }
 }
+
+
+
+
+
