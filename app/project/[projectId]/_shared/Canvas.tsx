@@ -28,7 +28,7 @@ const Canvas = ({projectDetail, screenConfig, loading,takeScreenShot}:Props) => 
     const SCREEN_HEIGHT = isMobile ? 800 : 800;
     const GAP = isMobile ? 10 : 60;
     
-    const iframeRefs=useRef<(HTMLFormElement|null)[]>([]);
+    const iframeRefs=useRef<React.RefObject<HTMLIFrameElement | null>[]>([]);
 
 
 
@@ -73,6 +73,23 @@ const captureOneIframe = async (iframe: HTMLIFrameElement) => {
     return canvas;
 };
 
+const updateProjectWithScreenShot = useCallback(async (base64Url: string) => {
+    try {
+        const result = await axios.put('/api/project', {
+            screenShot: base64Url,
+            projectId: projectDetail?.projectId,
+            theme: projectDetail?.theme,
+            projectName: projectDetail?.projectName,
+        });
+
+        console.log(result.data);
+        toast.success("Screenshot saved successfully");
+    } catch (error) {
+        console.error("Failed to save screenshot:", error);
+        toast.error("Failed to save screenshot");
+    }
+}, [projectDetail?.projectId, projectDetail?.projectName, projectDetail?.theme]);
+
 const onTakeScreenShot = useCallback(async (saveOnly = false) => {
     try {
         const iframes = iframeRefs.current
@@ -96,8 +113,7 @@ const onTakeScreenShot = useCallback(async (saveOnly = false) => {
         // 2) stitch into one final canvas (side-by-side)
         const scale = window.devicePixelRatio || 1;
         const headerH = 40; // same as your header
-        const outW =
-            Math.max(iframes.length * (SCREEN_WIDTH + GAP), SCREEN_WIDTH) * scale;
+        const outW = iframes.length * (SCREEN_WIDTH + GAP) * scale;
         const outH = SCREEN_HEIGHT * scale;
 
         const out = document.createElement("canvas");
@@ -133,23 +149,6 @@ const onTakeScreenShot = useCallback(async (saveOnly = false) => {
         toast.error("Capture failed (iframe)");
     }
 }, [captureOneIframe, updateProjectWithScreenShot, SCREEN_WIDTH, SCREEN_HEIGHT, GAP]);
-
-const updateProjectWithScreenShot = useCallback(async (base64Url: string) => {
-    try {
-        const result = await axios.put('/api/project', {
-            screenShot: base64Url,
-            projectId: projectDetail?.projectId,
-            theme: projectDetail?.theme,
-            projectName: projectDetail?.projectName,
-        });
-
-        console.log(result.data);
-        toast.success("Screenshot saved successfully");
-    } catch (error) {
-        console.error("Failed to save screenshot:", error);
-        toast.error("Failed to save screenshot");
-    }
-}, [projectDetail?.projectId, projectDetail?.projectName, projectDetail?.theme]);
 
 useEffect(() => {
     if (takeScreenShot !== undefined) {
@@ -211,8 +210,10 @@ useEffect(() => {
       }}
     >
      <Skeleton className='w-full   bg-gray-600  rounded-lg h-10'/>
-      <Skeleton className='w-full  bg-gray-600   rounded-lg h-10'/>      <Skeleton className='w-full rounded-lg h-10'/>
-      <Skeleton className='w-full   bg-gray-600  rounded-lg h-10'/>      <Skeleton className='w-full rounded-lg h-10'/>
+      <Skeleton className='w-full  bg-gray-600   rounded-lg h-10'/>
+      <Skeleton className='w-full bg-gray-600 rounded-lg h-10'/>
+      <Skeleton className='w-full   bg-gray-600  rounded-lg h-10'/>
+      <Skeleton className='w-full bg-gray-600 rounded-lg h-10'/>
       <Skeleton className='w-full  bg-gray-600   rounded-lg h-10'/>
       <Skeleton className='w-full  bg-gray-600   rounded-lg h-10'/>
       <Skeleton className='w-full  bg-gray-600   rounded-lg h-10'/>
@@ -222,10 +223,14 @@ useEffect(() => {
       
     </div>
     
-    }
+              )}
      </div>
-  ))} 
+         )                                    
 
+
+  })
+
+  }
 
   </TransformComponent>
   </>)}

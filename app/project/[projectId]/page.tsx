@@ -9,7 +9,6 @@ import { Loader2Icon, LoaderIcon } from 'lucide-react'
 import Canvas from './_shared/Canvas'
 import { RefreshDataContext } from '@/context/RefreshDataContext'
 
-
 const ProjectCanvasPlayground = () => {
 
 
@@ -106,12 +105,14 @@ const [takeScreenShot,setTakeScreenShot] = useState<any>()
   return (
     <div>
         <ProjectHeader/>
+      
         {loading && <div 
         className='p-3 bg-blue-300
          border-blue-600 rounded-xl absolute top-1/2 left-1/2'>
           <h2 className='flex gap-2 items-center'> <Loader2Icon className='animate-spin'/> {loadingMsg}</h2>
         </div>}
-
+      
+           
 
         <div className='flex gap-5'>
 
