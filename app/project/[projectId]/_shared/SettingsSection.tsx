@@ -109,7 +109,8 @@ const SettingsSection = ({projectDetail,screenDescription,takeScreenShot}:Props)
          </div>
 
 
-           <div className='mt-5 flex flex-col'>
+ 
+             <div className='mt-5 flex flex-col overflow-auto'>
             <h1 className='text-sm mb-4 '>Themes</h1>
             <div className='flex-1 overflow-auto'>
               {/* <div className='overflow-auto'> */}
@@ -140,10 +141,11 @@ const SettingsSection = ({projectDetail,screenDescription,takeScreenShot}:Props)
                 ))}
               </div>
             {/* </div> */}
-           </div>
+  
+        </div>
 
    <div className='mt-5'>
-            <h1 className='text-sm mb-2'>Extras</h1>
+            <h1 className='text-sm mb-2 mt-3'>Extras</h1>
          <div className='flex gap-3'>
             <Button size={'sm'} variant={'outline'} className='mt-2 ' onClick={()=>takeScreenShot()}><Camera/>Screenshot</Button>
          <Button size={'sm'} variant={'outline'} className='mt-2 '><Share/>Share</Button>

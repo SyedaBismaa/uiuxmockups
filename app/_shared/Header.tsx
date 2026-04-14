@@ -9,7 +9,6 @@ const Header = () => {
     <div className='flex justify-between items-center p-4'>
     
         <div className='flex gap-2 items-center'>
-            <h1 className='text-xl'>Logo</h1>
             <h2 className='text-xl font-semibold'><span className='text-primary'>UIUX</span> MOCK</h2>
         </div>
 
